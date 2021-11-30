@@ -1,0 +1,101 @@
+<html>
+  <head>
+     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+     <style>
+	body {
+	  margin: 0;
+	  padding: 0;
+	}
+	#map { position: absolute; top: 0; height: 100vh; width: 50vw; }
+	.animated-icon {
+	  width: 20px;
+	  height: 20px;
+	  background-color: rgba(128, 0, 128,0.5);
+	  border-radius: 50%;
+	  box-shadow: 0px 0px 4px white;
+	  transition: all 1s
+	}
+	.box {
+	  width: 100%;
+	  height: 1000px;
+	}
+	.map-pin {
+	  position: absolute;
+	  top: 0;
+	  height: 100%;
+	  width: 50vw;
+	}
+
+	.red {
+	  background-color: red;
+	}
+	.pink {
+	  background-color: pink;
+	}
+	.purple {
+	  background-color: purple;
+	}
+
+     </style>
+  </head>
+  <body>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.8.0/ScrollTrigger.min.js"></script>
+    <div id="scroll-trigger-container">
+      <div class="map-pin">
+	<div id="map"></div>
+      </div>
+      <div>
+	<div class="box red"></div>
+	<div class="box pink"></div>
+	<div class="box purple"></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script>
+  var map = L.map('map').setView([51.505, -0.09], 6);
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+      {
+	  maxZoom: 17,
+	  minZoom: 9
+	}).addTo(map);
+  var icon = L.divIcon({
+      iconSize: [30, 30],
+      iconAnchor: [10, 10],
+      popupAnchor: [10, 0],
+      shadowSize: [0, 0],
+      className: 'animated-icon my-icon-id'
+    })
+  var ll = L.latLng( 51.505,-0.09)
+
+  // create marker
+  var marker = L.marker(ll, {
+      icon: icon,
+      title: 'look at me!'
+    })
+
+  marker.addTo(map)
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  const animatedIcon = document.querySelector('.animated-icon');
+
+  const timeline = gsap.timeline({
+      // yes, we can add it to an entire timeline!
+      scrollTrigger: {
+	  trigger: ".map-pin",
+	  pin: true,
+	  markers: true,
+	  pinSpacing: false,
+	  end: "3000px", // end after scrolling 500px beyond the start
+	  onUpdate: e => {
+	      animatedIcon.style.width = 20 * 10 * e.progress;
+	      animatedIcon.style.height = 20 * 10 *  e.progress;
+	    }
+	}});
+
+</script>
